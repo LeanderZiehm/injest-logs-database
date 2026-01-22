@@ -2,7 +2,7 @@
 
 ### Run from GitHub Container Registry:
 ```bash
-docker run -d -p 9000:9000 \
+docker run -d -p 9001:9001 \
   -e POSTGRES_HOST=host \
   -e POSTGRES_PORT=5432 \
   -e POSTGRES_DB=logs \
