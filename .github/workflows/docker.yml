@@ -2,8 +2,8 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '*'   # Trigger only on tag creation
 
 permissions:
   contents: read
@@ -17,9 +17,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Lowercase the repository name
-      # - name: Set lowercase repository name
-      #   run: echo "REPO_LC=${GITHUB_REPOSITORY##*/}" | tr '[:upper:]' '[:lower:]' >> $GITHUB_ENV
+      # Lowercase the full repository name and set as step output
+      - name: Set lowercase image name
+        id: image
+        run: |
+          IMAGE="${GITHUB_REPOSITORY,,}"
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
+          echo "Lowercase image name: $IMAGE"
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -34,5 +38,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/leanderziehm/injest-logs-database:latest
-            ghcr.io/leanderziehm/injest-logs-database:${{ github.sha }}
+            ghcr.io/${{ steps.image.outputs.image }}:latest
+            ghcr.io/${{ steps.image.outputs.image }}:${{ github.sha }}
